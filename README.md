@@ -1,5 +1,7 @@
 # CineMatch USA
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/nkachalia1/cinematch)
+
 An interview-ready machine learning movie recommender for USA films from the past 50 years. The app pairs a FastAPI backend with a polished streaming-style frontend and is ready to deploy as a Render web service.
 
 ## What It Does
@@ -50,6 +52,10 @@ pytest
 ## Render Deployment
 
 This repo includes `render.yaml` for Render Blueprints.
+
+One-click deployment:
+
+[Deploy CineMatch USA to Render](https://render.com/deploy?repo=https://github.com/nkachalia1/cinematch)
 
 Manual Render settings:
 
