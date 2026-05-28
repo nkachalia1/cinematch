@@ -1,6 +1,6 @@
 # CineMatch
 
-[![CineMatch Link](https://cinematch-usa.onrender.com)
+[CineMatch Link](https://cinematch-usa.onrender.com/)
 
 A machine learning movie recommender for USA films from the past 50 years. The app pairs a FastAPI backend with a polished streaming-style frontend and is ready to deploy as a Render web service.
 
