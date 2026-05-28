@@ -2,6 +2,7 @@ const state = {
   genres: new Set(),
   moods: new Set(),
   decade: "all",
+  activeSeedId: "",
   movies: [],
   discover: null,
 };
@@ -51,8 +52,13 @@ const elements = {
   moodChips: document.querySelector("#moodChips"),
   decadeControl: document.querySelector("#decadeControl"),
   resetButton: document.querySelector("#resetButton"),
+  clearSeedButton: document.querySelector("#clearSeedButton"),
   resultsGrid: document.querySelector("#resultsGrid"),
+  resultsTitle: document.querySelector("#resultsTitle"),
   matchStatus: document.querySelector("#matchStatus"),
+  selectedSeed: document.querySelector("#selectedSeed"),
+  selectedSeedTitle: document.querySelector("#selectedSeedTitle"),
+  selectedSeedMeta: document.querySelector("#selectedSeedMeta"),
   shelves: document.querySelector("#shelves"),
   heroStats: document.querySelector("#heroStats"),
   spotlight: document.querySelector("#spotlight"),
@@ -102,6 +108,10 @@ function runtime(movie) {
   return `${hours}h ${minutes}m`;
 }
 
+function movieById(movieId) {
+  return state.movies.find((movie) => movie.id === movieId) || null;
+}
+
 function movieCard(movie, compact = false) {
   const reasons = movie.match_reasons || movie.moods?.slice(0, 2) || [];
   const score = movie.match_score || Math.round(movie.rating * 10);
@@ -109,7 +119,13 @@ function movieCard(movie, compact = false) {
   const castText = movie.cast.slice(0, 2).join(", ");
 
   return `
-    <article class="movie-card" data-movie-id="${escapeHtml(movie.id)}">
+    <article
+      class="movie-card"
+      data-movie-id="${escapeHtml(movie.id)}"
+      role="button"
+      tabindex="0"
+      aria-label="Recommend movies like ${escapeHtml(movie.title)}"
+    >
       <div class="poster-art">
         <span>${escapeHtml(initials(movie.title))}</span>
       </div>
@@ -148,6 +164,34 @@ function applyPosterPalettes(container, movies) {
     const poster = card.querySelector(".poster-art");
     if (movie && poster) setPosterVars(poster, movie);
   });
+}
+
+function markSelectedCards() {
+  document.querySelectorAll(".movie-card").forEach((card) => {
+    const isSelected = Boolean(state.activeSeedId) && card.dataset.movieId === state.activeSeedId;
+    card.classList.toggle("selected", isSelected);
+    if (isSelected) {
+      card.setAttribute("aria-current", "true");
+    } else {
+      card.removeAttribute("aria-current");
+    }
+  });
+}
+
+function updateSelectedSeed(seedMovie = null) {
+  const movie = seedMovie || movieById(state.activeSeedId);
+  if (!movie) {
+    elements.selectedSeed.hidden = true;
+    elements.resultsTitle.textContent = "Recommended Matches";
+    markSelectedCards();
+    return;
+  }
+
+  elements.selectedSeed.hidden = false;
+  elements.selectedSeedTitle.textContent = movie.title;
+  elements.selectedSeedMeta.textContent = `${movie.year} | ${movie.genres.slice(0, 3).join(" / ")} | ${movie.rating.toFixed(1)} rating`;
+  elements.resultsTitle.textContent = `Because You Picked ${movie.title}`;
+  markSelectedCards();
 }
 
 function renderSkeleton(container, count = 8) {
@@ -196,6 +240,7 @@ function renderResults(movies) {
   }
   elements.resultsGrid.innerHTML = movies.map((movie) => movieCard(movie)).join("");
   applyPosterPalettes(elements.resultsGrid, movies);
+  markSelectedCards();
 }
 
 function renderShelves(shelves) {
@@ -215,6 +260,7 @@ function renderShelves(shelves) {
   elements.shelves.querySelectorAll(".shelf-row").forEach((row, shelfIndex) => {
     applyPosterPalettes(row, shelves[shelfIndex].movies);
   });
+  markSelectedCards();
 }
 
 async function fetchJson(url) {
@@ -239,11 +285,29 @@ function recommendationParams() {
 }
 
 async function loadRecommendations() {
+  state.activeSeedId = elements.seedSelect.value;
+  updateSelectedSeed();
   renderSkeleton(elements.resultsGrid, 8);
-  elements.matchStatus.textContent = "Scoring catalog";
+  elements.matchStatus.textContent = state.activeSeedId ? "Scoring similar titles" : "Scoring catalog";
   const data = await fetchJson(`/api/recommend?${recommendationParams().toString()}`);
+  state.activeSeedId = data.seed_movie?.id || "";
+  updateSelectedSeed(data.seed_movie);
   renderResults(data.movies);
-  elements.matchStatus.textContent = `${data.count} ML-ranked matches`;
+  elements.matchStatus.textContent = data.seed_movie
+    ? `${data.count} ML-ranked matches from ${data.seed_movie.title}`
+    : `${data.count} ML-ranked matches`;
+}
+
+async function selectSeed(movieId, { scroll = true } = {}) {
+  if (!movieId) return;
+  const movie = movieById(movieId);
+  state.activeSeedId = movieId;
+  elements.seedSelect.value = movieId;
+  updateSelectedSeed(movie);
+  if (scroll) {
+    elements.selectedSeed.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  await loadRecommendations();
 }
 
 function toggleChip(button) {
@@ -264,6 +328,7 @@ function resetControls() {
   state.genres.clear();
   state.moods.clear();
   state.decade = "all";
+  state.activeSeedId = "";
   elements.seedSelect.value = "";
   elements.vibeInput.value = "";
   document.querySelectorAll(".chip.active").forEach((chip) => {
@@ -273,6 +338,7 @@ function resetControls() {
   document.querySelectorAll(".segment").forEach((segment) => {
     segment.classList.toggle("active", segment.dataset.decade === "all");
   });
+  updateSelectedSeed();
 }
 
 function bindEvents() {
@@ -283,6 +349,19 @@ function bindEvents() {
 
   elements.resetButton.addEventListener("click", () => {
     resetControls();
+    loadRecommendations().catch(showError);
+  });
+
+  elements.clearSeedButton.addEventListener("click", () => {
+    state.activeSeedId = "";
+    elements.seedSelect.value = "";
+    updateSelectedSeed();
+    loadRecommendations().catch(showError);
+  });
+
+  elements.seedSelect.addEventListener("change", () => {
+    state.activeSeedId = elements.seedSelect.value;
+    updateSelectedSeed();
     loadRecommendations().catch(showError);
   });
 
@@ -302,10 +381,23 @@ function bindEvents() {
 
     const seedButton = event.target.closest(".seed-button");
     if (seedButton) {
-      elements.seedSelect.value = seedButton.dataset.seed;
-      elements.form.scrollIntoView({ behavior: "smooth", block: "center" });
-      loadRecommendations().catch(showError);
+      selectSeed(seedButton.dataset.seed).catch(showError);
+      return;
     }
+
+    const movieCardNode = event.target.closest(".movie-card");
+    if (movieCardNode) {
+      selectSeed(movieCardNode.dataset.movieId).catch(showError);
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (event.target.closest("button, input, select, textarea")) return;
+    const movieCardNode = event.target.closest(".movie-card");
+    if (!movieCardNode) return;
+    event.preventDefault();
+    selectSeed(movieCardNode.dataset.movieId).catch(showError);
   });
 }
 

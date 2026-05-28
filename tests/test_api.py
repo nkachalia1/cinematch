@@ -21,6 +21,7 @@ def test_recommend_endpoint_returns_ranked_movies():
     assert response.status_code == 200
     payload = response.json()
     assert payload["count"] == 5
+    assert payload["seed_movie"]["id"] == "the-matrix"
     assert payload["movies"][0]["id"] != "the-matrix"
     assert "match_score" in payload["movies"][0]
 

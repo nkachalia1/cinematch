@@ -8,7 +8,8 @@ A machine learning movie recommender for USA films from the past 50 years. The a
 
 - Recommends USA or USA-led films from 1976 onward.
 - Uses a content-based ML pipeline: TF-IDF text vectors plus cosine similarity.
-- Lets users combine a seed movie, free-text vibe, genre chips, mood chips, and decade controls.
+- Lets users click any movie card to use it as the recommendation seed.
+- Also supports free-text vibe, genre chips, mood chips, decade controls, and the reference-title dropdown.
 - Returns explainable match reasons and match scores.
 - Serves the static frontend and API from one FastAPI app for simple deployment.
 
@@ -46,7 +47,7 @@ pytest
 - `GET /health` - service and model status.
 - `GET /api/stats` - catalog metadata, genres, moods, and active 50-year window.
 - `GET /api/movies?q=&genres=&moods=&decade=&limit=` - searchable catalog.
-- `GET /api/recommend?movie_id=&vibe=&genres=&moods=&decade=&limit=` - ML-ranked recommendations.
+- `GET /api/recommend?movie_id=&vibe=&genres=&moods=&decade=&limit=` - ML-ranked recommendations, including the selected `seed_movie` when a seed is provided.
 - `GET /api/discover` - spotlight title and curated shelves for the homepage.
 
 ## Render Deployment

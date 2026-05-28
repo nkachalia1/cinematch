@@ -82,6 +82,7 @@ def recommend(
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
+    seed_movie = model.get_movie(movie_id) if movie_id else None
     return {
         "count": len(results),
         "query": {
@@ -91,5 +92,6 @@ def recommend(
             "moods": _csv(moods),
             "decade": decade,
         },
+        "seed_movie": seed_movie,
         "movies": results,
     }

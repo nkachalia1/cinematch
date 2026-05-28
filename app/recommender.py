@@ -131,6 +131,11 @@ class MovieRecommender:
             matches.sort(key=lambda movie: (movie["rating"], movie["popularity"], movie["year"]), reverse=True)
         return [self._serialize(movie) for movie in matches[:limit]]
 
+    def get_movie(self, movie_id: str) -> dict:
+        if movie_id not in self.index_by_id:
+            raise KeyError(f"Unknown movie_id: {movie_id}")
+        return self._serialize(self.movies[self.index_by_id[movie_id]])
+
     def recommend(
         self,
         movie_id: str | None = None,

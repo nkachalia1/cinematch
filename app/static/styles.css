@@ -201,6 +201,7 @@ h1 {
 
 .recommender-panel,
 .spotlight,
+.selected-seed,
 .model-strip {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
@@ -390,6 +391,30 @@ fieldset {
   font-weight: 800;
 }
 
+.selected-seed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px 18px;
+}
+
+.selected-seed[hidden] {
+  display: none;
+}
+
+.selected-seed h3 {
+  margin-bottom: 6px;
+  font-size: 1.2rem;
+}
+
+.selected-seed p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .movie-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -401,6 +426,7 @@ fieldset {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   background: #101010;
+  cursor: pointer;
   overflow: hidden;
   transition:
     transform 180ms ease,
@@ -412,6 +438,16 @@ fieldset {
   transform: translateY(-4px);
   border-color: rgba(229, 9, 20, 0.58);
   background: #151515;
+}
+
+.movie-card:focus-visible {
+  outline: 3px solid rgba(52, 214, 200, 0.72);
+  outline-offset: 3px;
+}
+
+.movie-card.selected {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 1px rgba(52, 214, 200, 0.28), 0 20px 48px rgba(52, 214, 200, 0.12);
 }
 
 .poster-art {
@@ -602,8 +638,13 @@ fieldset {
   }
 
   .topbar,
-  .section-head {
+  .section-head,
+  .selected-seed {
     flex-direction: column;
+  }
+
+  .selected-seed {
+    align-items: stretch;
   }
 
   .nav-pills {

@@ -99,9 +99,17 @@
       <section class="section-head" id="matches">
         <div>
           <p class="eyebrow">Your Queue</p>
-          <h2>Recommended Matches</h2>
+          <h2 id="resultsTitle">Recommended Matches</h2>
         </div>
         <p class="status-text" id="matchStatus" aria-live="polite">Scoring catalog</p>
+      </section>
+      <section class="selected-seed" id="selectedSeed" aria-live="polite" hidden>
+        <div>
+          <p class="eyebrow">Picked Movie</p>
+          <h3 id="selectedSeedTitle">No reference selected</h3>
+          <p id="selectedSeedMeta"></p>
+        </div>
+        <button class="secondary-button" id="clearSeedButton" type="button">Clear Pick</button>
       </section>
       <section class="movie-grid" id="resultsGrid" aria-live="polite"></section>
 
