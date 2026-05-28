@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="CineMatch USA is a machine learning movie recommender for USA films from the past 50 years."
+    />
+    <title>CineMatch USA</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar" aria-label="Primary">
+        <a class="brand" href="/" aria-label="CineMatch USA home">
+          <span class="brand-mark">CM</span>
+          <span>CineMatch USA</span>
+        </a>
+        <nav class="nav-pills" aria-label="Catalog views">
+          <a href="#matches">Matches</a>
+          <a href="#catalog">Catalog</a>
+          <a href="#model">Model</a>
+        </nav>
+      </header>
+
+      <section class="hero-grid" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">USA films - past 50 years</p>
+          <h1 id="hero-title">Movie night, ranked by taste.</h1>
+          <p class="hero-text">
+            American cinema from tense crime to warm animation, scored by content similarity and taste signals.
+          </p>
+          <div class="hero-stats" id="heroStats" aria-live="polite">
+            <span>Loading catalog</span>
+          </div>
+        </div>
+
+        <form class="recommender-panel" id="recommenderForm" aria-label="Recommendation controls">
+          <div class="field-row">
+            <label for="seedSelect">Reference title</label>
+            <select id="seedSelect" name="seed">
+              <option value="">No seed - editor picks</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label for="vibeInput">Vibe</label>
+            <input
+              id="vibeInput"
+              name="vibe"
+              type="text"
+              autocomplete="off"
+              placeholder="neon sci-fi, tense crime, warm animation"
+            />
+          </div>
+
+          <fieldset class="chip-group">
+            <legend>Genres</legend>
+            <div class="chips" id="genreChips"></div>
+          </fieldset>
+
+          <fieldset class="chip-group">
+            <legend>Moods</legend>
+            <div class="chips" id="moodChips"></div>
+          </fieldset>
+
+          <fieldset class="segmented">
+            <legend>Decade</legend>
+            <div id="decadeControl">
+              <button type="button" class="segment active" data-decade="all">All</button>
+              <button type="button" class="segment" data-decade="1970s">70s</button>
+              <button type="button" class="segment" data-decade="1980s">80s</button>
+              <button type="button" class="segment" data-decade="1990s">90s</button>
+              <button type="button" class="segment" data-decade="2000s">00s</button>
+              <button type="button" class="segment" data-decade="2010s">10s</button>
+              <button type="button" class="segment" data-decade="2020s">20s</button>
+            </div>
+          </fieldset>
+
+          <div class="panel-actions">
+            <button class="primary-button" type="submit">Find Matches</button>
+            <button class="secondary-button" id="resetButton" type="button">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="spotlight" id="spotlight" aria-label="Spotlight title">
+        <div class="spotlight-poster" id="spotlightPoster" aria-hidden="true"></div>
+        <div>
+          <p class="eyebrow">Spotlight</p>
+          <h2 id="spotlightTitle">Preparing the queue</h2>
+          <p id="spotlightMeta"></p>
+          <p id="spotlightSynopsis"></p>
+        </div>
+      </section>
+
+      <section class="section-head" id="matches">
+        <div>
+          <p class="eyebrow">Your Queue</p>
+          <h2>Recommended Matches</h2>
+        </div>
+        <p class="status-text" id="matchStatus" aria-live="polite">Scoring catalog</p>
+      </section>
+      <section class="movie-grid" id="resultsGrid" aria-live="polite"></section>
+
+      <section class="section-head" id="catalog">
+        <div>
+          <p class="eyebrow">Browse</p>
+          <h2>Curated Shelves</h2>
+        </div>
+      </section>
+      <div class="shelves" id="shelves"></div>
+
+      <section class="model-strip" id="model">
+        <div>
+          <p class="eyebrow">Model</p>
+          <h2>TF-IDF content vectors + cosine similarity</h2>
+        </div>
+        <p>
+          Title, genre, cast, director, moods, themes, and synopsis become weighted text features. Genre, mood, and
+          decade controls add transparent ranking boosts for explainable matches.
+        </p>
+      </section>
+    </main>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
