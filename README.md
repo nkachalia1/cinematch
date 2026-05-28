@@ -1,6 +1,6 @@
 # CineMatch
 
-[![CineMatch Link](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/nkachalia1/cinematch)
+[![CineMatch Link](https://cinematch-usa.onrender.com)
 
 A machine learning movie recommender for USA films from the past 50 years. The app pairs a FastAPI backend with a polished streaming-style frontend and is ready to deploy as a Render web service.
 
@@ -53,10 +53,6 @@ pytest
 
 This repo includes `render.yaml` for Render Blueprints.
 
-One-click deployment:
-
-[Deploy CineMatch](https://render.com/deploy?repo=https://github.com/nkachalia1/cinematch)
-
 Manual Render settings:
 
 - Runtime: Python
@@ -69,4 +65,3 @@ After pushing to GitHub, create a new Render Web Service or Blueprint from the r
 
 - The dataset is a curated demo catalog kept in code for transparency and easy review.
 - Poster art is deterministic CSS-generated key art, avoiding external image dependencies and poster licensing issues.
-- The ranking code is deliberately small and readable so it can be explained live in an interview.
